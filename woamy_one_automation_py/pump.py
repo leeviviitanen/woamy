@@ -13,7 +13,7 @@ def tohex(val):
 
 
 def pump_control_main(): 
-    find_COM=list(port_.grep('A10KDPW2A')) #find the port
+    find_COM=list(port_.grep('A10KDPW2')) #find the port
     #conection to the pump
     pump_UART = serial.Serial(
         port=find_COM[0][0],
@@ -29,7 +29,7 @@ def pump_control_main():
     pump_UART.read(14)
     time.sleep(1)
     
-    path_cache=r"C:\Users\ali_a\Downloads\woamy_one_automation_py\mem_cache.txt"
+    path_cache=r"mem_cache.txt"
     
     while 1:
         time.sleep(1)

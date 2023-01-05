@@ -21,7 +21,7 @@ def pressure_regulator_control_main():
     dataType = ljm.constants.FLOAT32
     
     #path of the memory cache
-    path_cache=r"C:\Users\ali_a\Downloads\woamy_one_automation_py\mem_cache.txt"
+    path_cache=r"mem_cache.txt"
     
     while 1:
         time.sleep(1)

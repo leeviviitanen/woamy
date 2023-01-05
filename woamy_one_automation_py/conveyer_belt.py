@@ -29,7 +29,7 @@ def tohex(val):
 
 def conveyer_belt_control_main(): 
     #conection to the conveyer belt
-    find_COM=list(port_.grep('AB0OZ6LFA')) #find the port
+    find_COM=list(port_.grep('AB0OZ6LF')) #find the port
     cb_UART = serial.Serial(
         port= find_COM[0][0], #COM port of the conveyer belt
         baudrate=115200,
@@ -44,7 +44,7 @@ def conveyer_belt_control_main():
     cb_UART.read(8)
 
     #path of the memory cache
-    path_cache=r"C:\Users\ali_a\Downloads\woamy_one_automation_py\mem_cache.txt"
+    path_cache=r"mem_cache.txt"
     
     while 1:
         
