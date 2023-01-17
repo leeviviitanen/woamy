@@ -1,5 +1,6 @@
 import asyncio
 import serial
+from pymemcache.client.base import Client
 
 
 
@@ -23,9 +24,11 @@ class Pump:
         )
         self.speed = 0.0
 
+        await asyncio.sleep(1)
         #start the pump
         message_bytes = bytes.fromhex("020C0023E5000080010000000049") 
         self.ser.write(message_bytes)
+        await asyncio.sleep(1)
         self.ser.read(14)
         await asyncio.sleep(1)
 
@@ -47,17 +50,19 @@ class Pump:
         if target_speed == 'stop':
             message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
             self.ser.write(message_bytes)
+            await asynci.sleep(1)
             self.ser.read(14)
             await asyncio.sleep(1)
 
             message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
             self.ser.write(message_bytes)
+            await asyncio.sleep(1)
             self.ser.read(14)
-            await time.sleep(1)
+            await asyncio.sleep(1)
             return
 
         ## Keep the speed same
-        elif float(target_speed) == speed:
+        elif float(target_speed) == pump_speed:
             return
     
         ## Change the speed
@@ -83,20 +88,23 @@ class Pump:
             print('Command sent pump:', speed_command)
             message_bytes = bytes.fromhex(speed_command)
             self.ser.write(message_bytes)
-            self.ser.read(14)
-
-        ## If the connection is closed set speed to zero shut down the pump
-        async def close_connection(self):
-
-            message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
-            self.ser.write(message_bytes)
-            self.ser.read(14)
             await asyncio.sleep(1)
-
-            message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
-            self.ser.write(message_bytes)
             self.ser.read(14)
-            await time.sleep(1)
-            self.ser.close()
-            return
+
+    ## If the connection is closed set speed to zero shut down the pump
+    async def close_connection(self):
+
+        message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
+        self.ser.write(message_bytes)
+        await asyncio.sleep(1)
+        self.ser.read(14)
+        await asyncio.sleep(1)
+
+        message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
+        self.ser.write(message_bytes)
+        await asyncio.sleep(1)
+        self.ser.read(14)
+        await asyncio.sleep(1)
+        self.ser.close()
+        return
 

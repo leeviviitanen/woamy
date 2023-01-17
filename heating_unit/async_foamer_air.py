@@ -1,9 +1,10 @@
 import asyncio
 from labjack import ljm
+from pymemcache.client.base import Client
 
 
 
-class Pump:
+class FoamerAir:
 
     def __init__(self, unit_name=None, memcached_address=None):
 
@@ -15,7 +16,7 @@ class Pump:
         self.mc = Client(self.mc_address)
         self.pressure = 0.
 
-        self.handle = ljm.openS("T4", "ANY", "ANY")  # T4 device, Any connection, Any identifier
+        self.handle = ljm.openS(self.mc.get(self.unit_name + ".address").decode("utf-8"), "ANY", "ANY")  # T4 device, Any connection, Any identifier
 
             
         # Setup and call eWriteAddress to write a value to the LabJack.

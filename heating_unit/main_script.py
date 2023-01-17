@@ -8,22 +8,22 @@ from pymemcache.client.base import Client
 
 defaults = {
     "memcache.address"                  : "127.0.0.1:11211",
-    "heatingUnit.0.address"             : "/dev/tty.usbserial-ANZ20BUO",
+    "heatingUnit.0.address"             : "/dev/ttyUSB2",
     "heatingUnit.0.enable"              : 0, 
     "heatingUnit.0.target"              : 0, 
     "heatingUnit.0.pythonImportName"    : "async_heating_unit",
 
-    "conveyorBelt.0.address"             : "/dev/tty.usbserial-ANZ20BUO",
+    "conveyorBelt.0.address"             : "/dev/ttyUSB0",
     "conveyorBelt.0.enable"              : 0,
     "conveyorBelt.0.target"              : 0,
     "conveyorBelt.0.pythonImportName"    : "async_conveyor_belt",
 
-    "pump.0.address"             : "/dev/tty.usbserial-ANZ20BUO",
+    "pump.0.address"             : "/dev/ttyUSB1",
     "pump.0.enable"              : 0,
     "pump.0.target"              : 0,
     "pump.0.pythonImportName"    : "async_pump",
 
-    "foamerAir.0.address"             : "/dev/tty.usbserial-ANZ20BUO",
+    "foamerAir.0.address"             : "T4",
     "foamerAir.0.enable"              : 0,
     "foamerAir.0.target"              : 0,
     "foamerAir.0.pythonImportName"    : "async_foamer_air",
@@ -35,7 +35,7 @@ async def run_machine():
 
     ## Create objects for each "module"
     heatingUnit_0 = HeatingUnit(unit_name="heatingUnit.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
-    conveyorBelt_0 = conveyorBelt(unit_name="conveyorBelt.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
+    conveyorBelt_0 = ConveyorBelt(unit_name="conveyorBelt.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
     pump_0 = Pump(unit_name="pump.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
     foamerAir_0 = FoamerAir(unit_name="foamerAir.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
 
@@ -60,6 +60,7 @@ async def run_machine():
         coros.append(asyncio.sleep(0.5))
         results = await asyncio.gather(*coros)
         ##await asyncio.sleep(1)
+        print("running cycle completed")
 
 
     oliot = []

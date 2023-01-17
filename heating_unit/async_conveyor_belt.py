@@ -1,5 +1,6 @@
 import asyncio
 import serial
+from pymemcache.client.base import Client
 
 
 
@@ -13,7 +14,12 @@ class ConveyorBelt:
     async def _init(self):
 
         self.mc = Client(self.mc_address)
-        self.ser = serial.Serial(self.mc.get(self.unit_name + ".address").decode("utf-8"), 250000)
+        self.ser = serial.Serial(
+            self.mc.get(self.unit_name + ".address").decode("utf-8"), #COM port of the conveyer belt
+            baudrate=115200,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS
+        )
         self.speed = 0.0
 
 
@@ -44,7 +50,7 @@ class ConveyorBelt:
         target_speed = self.mc.get(self.unit_name + ".target").decode("utf-8")
         speed = self.speed
 
-        if target_speed == "stop".decode("utf-8"):
+        if target_speed == "stop":
             message_bytes = bytes.fromhex("01060000000089CA") #stop
             self.ser.write(message_bytes)
             await asyncio.sleep(0.5)
