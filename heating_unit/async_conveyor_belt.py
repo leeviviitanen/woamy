@@ -22,6 +22,11 @@ class ConveyorBelt:
         )
         self.speed = 0.0
 
+        message_bytes = bytes.fromhex("010600000001480A") 
+        self.ser.write(message_bytes)
+        await asyncio.sleep(0.1)
+        await self.read_message()
+
 
     async def read_message(self):
         """Print message from self.ser - usb device
@@ -36,7 +41,7 @@ class ConveyorBelt:
         message_bits = self.ser.in_waiting
         if message_bits:
             message = self.ser.read(message_bits)
-            return message.decode('utf-8')
+            return message
 
 
     #calculate the crc modbus checksum
@@ -67,31 +72,29 @@ class ConveyorBelt:
 
         if target_speed == "stop":
             message_bytes = bytes.fromhex("01060000000089CA") #stop
+            print("Sending: stop")
             self.ser.write(message_bytes)
-            await asyncio.sleep(0.5)
-            self.ser.read(8)
-            return
+            await asyncio.sleep(0.1)
+            await self.read_message()
+            print("Finished: stop")
 
-        elif float(target_speed) == speed:
-            await asyncio.sleep(0.5)
-            return
 
         else:
         
             cb_speed = int(-10*float(target_speed)) #conversion to frequency Hz, '-' because of the direction
-            cb_speed_hex = await tohex(cb_speed)
+            cb_speed_hex = await self.tohex(cb_speed)
                 
             command_speed_hex ='01060001'+ cb_speed_hex
 
             data = bytearray.fromhex(command_speed_hex)
-            crc_checksum = await calc_crc_modbus(data)
+            crc_checksum = await self.calc_crc_modbus(data)
          
             speed_command = command_speed_hex + crc_checksum
             
             message_bytes = bytes.fromhex(speed_command)
             self.ser.write(message_bytes)
-            await asyncio.sleep(0.5)
-            self.ser.read(8)
+            await asyncio.sleep(0.1)
+            await self.read_message()
             self.speed = float(target_speed)
 
 
@@ -101,7 +104,7 @@ class ConveyorBelt:
         message_bytes = bytes.fromhex("01060000000089CA") #stop
         self.ser.write(message_bytes)
         await asyncio.sleep(0.5)
-        self.ser.read(8)
+        await self.read_message()
         self.ser.close()
 
 

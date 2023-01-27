@@ -6,6 +6,11 @@ from async_conveyor_belt import ConveyorBelt
 from async_foamer_air import FoamerAir
 from pymemcache.client.base import Client
 
+
+# Belt port name 'AB0OZ6LF'
+# Pump port name 'A10KDPW2'
+# Heater port name 'ANZ20BUO'
+
 defaults = {
     "memcache.address"                  : "127.0.0.1:11211",
     "heatingUnit.0.address"             : "/dev/ttyUSB2",
@@ -27,6 +32,7 @@ defaults = {
     "foamerAir.0.enable"              : 0,
     "foamerAir.0.target"              : 0,
     "foamerAir.0.pythonImportName"    : "async_foamer_air",
+    # "listOfDevices"                     : ["foamerAir_0"]
     "listOfDevices"                     : ["heatingUnit_0", "conveyorBelt_0", "pump_0", "foamerAir_0"]
     }
 
@@ -34,10 +40,10 @@ defaults = {
 async def run_machine():
 
     ## Create objects for each "module"
-    heatingUnit_0 = HeatingUnit(unit_name="heatingUnit.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
-    conveyorBelt_0 = ConveyorBelt(unit_name="conveyorBelt.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
-    pump_0 = Pump(unit_name="pump.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
-    foamerAir_0 = FoamerAir(unit_name="foamerAir.0", memcached_address=mc.get("memcache.address").decode("utf-8"))
+    heatingUnit_0 = HeatingUnit(unit_name="heatingUnit.0", memcached_address=mc.get("memcache.address").decode("ascii"))
+    conveyorBelt_0 = ConveyorBelt(unit_name="conveyorBelt.0", memcached_address=mc.get("memcache.address").decode("ascii"))
+    pump_0 = Pump(unit_name="pump.0", memcached_address=mc.get("memcache.address").decode("ascii"))
+    foamerAir_0 = FoamerAir(unit_name="foamerAir.0", memcached_address=mc.get("memcache.address").decode("ascii"))
 
     ## Initialize objects using concurrency
     oliot = []
@@ -60,7 +66,6 @@ async def run_machine():
         coros.append(asyncio.sleep(0.5))
         results = await asyncio.gather(*coros)
         ##await asyncio.sleep(1)
-        print("running cycle completed")
 
 
     oliot = []

@@ -24,13 +24,12 @@ class Pump:
         )
         self.speed = 0.0
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
         #start the pump
         message_bytes = bytes.fromhex("020C0023E5000080010000000049") 
         self.ser.write(message_bytes)
-        await asyncio.sleep(1)
-        self.ser.read(14)
-        await asyncio.sleep(1)
+        await self.read_message()
+
 
 
     async def read_message(self):
@@ -46,9 +45,9 @@ class Pump:
         message_bits = self.ser.in_waiting
         if message_bits:
             message = self.ser.read(message_bits)
-            return message.decode('utf-8')
+            return message
 
-    def tohex(val):
+    async def tohex(self, val):
         return '{:04X}'.format(val & ((1 << 16)-1))
 
 
@@ -64,15 +63,11 @@ class Pump:
         if target_speed == 'stop':
             message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
             self.ser.write(message_bytes)
-            await asynci.sleep(1)
-            self.ser.read(14)
-            await asyncio.sleep(1)
+            await self.read_message()
 
             message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
             self.ser.write(message_bytes)
-            await asyncio.sleep(1)
-            self.ser.read(14)
-            await asyncio.sleep(1)
+            await self.read_message()
             return
 
         ## Keep the speed same
@@ -84,7 +79,7 @@ class Pump:
             
             pump_speed = int(target_speed)
             pump_speed = int(pump_speed*9.763) #conversion to the manual unit in %
-            pump_speed_hex = tohex(pump_speed)
+            pump_speed_hex = (await self.tohex(pump_speed))
                 
             command_speed_hex = '020C0020680000' + pump_speed_hex + '0000'
 
@@ -97,28 +92,21 @@ class Pump:
                 xor ^= packet_list_hex[i]
             #print('00' + hex(xor)[2:].upper())
             
-            speed_command=command_speed_hex + '00' + tohex(xor)
+            speed_command=command_speed_hex + '00' + (await self.tohex(xor))
             
-            print('Command sent pump:', speed_command)
             message_bytes = bytes.fromhex(speed_command)
             self.ser.write(message_bytes)
-            await asyncio.sleep(1)
-            self.ser.read(14)
+            await self.read_message()
 
     ## If the connection is closed set speed to zero shut down the pump
     async def close_connection(self):
 
         message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
         self.ser.write(message_bytes)
-        await asyncio.sleep(1)
-        self.ser.read(14)
-        await asyncio.sleep(1)
+        await self.read_message()
 
         message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
         self.ser.write(message_bytes)
-        await asyncio.sleep(1)
-        self.ser.read(14)
-        await asyncio.sleep(1)
+        await self.read_message()
         self.ser.close()
-        return
 

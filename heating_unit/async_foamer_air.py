@@ -29,7 +29,7 @@ class FoamerAir:
     async def update(self):
         
         
-        target_pressure = self.mc.get(self.unit_name + ".target").decode("utf-8")
+        target_pressure = self.mc.get(self.unit_name + ".target").decode("ascii")
         pressure_value = self.pressure
         
         #condition to stop the air
@@ -42,13 +42,14 @@ class FoamerAir:
         #sending commands to change the air pressure
         elif target_pressure and float(target_pressure)>=0 and float(target_pressure)<=5:
             
-            pressure_value=float(target_pressure)
+            self.pressure = float(target_pressure)
             ljm.eWriteAddress(self.handle, self.address_w, self.dataType, pressure_value)
             pressure_sensor_value = ljm.eReadAddress(self.handle, self.address_r, self.dataType)
             
 
     async def close_connection(self):
         # Close handle
+        ljm.eWriteAddress(self.handle, self.address_w, self.dataType, 0)
         ljm.close(self.handle)
     
     
