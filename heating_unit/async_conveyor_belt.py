@@ -23,6 +23,21 @@ class ConveyorBelt:
         self.speed = 0.0
 
 
+    async def read_message(self):
+        """Print message from self.ser - usb device
+
+        Returns
+        -------
+        message: str
+            Message read from the buffer of the device
+        """
+
+
+        message_bits = self.ser.in_waiting
+        if message_bits:
+            message = self.ser.read(message_bits)
+            return message.decode('utf-8')
+
 
     #calculate the crc modbus checksum
     async def calc_crc_modbus(self, data):

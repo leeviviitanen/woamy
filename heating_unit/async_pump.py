@@ -33,6 +33,20 @@ class Pump:
         await asyncio.sleep(1)
 
 
+    async def read_message(self):
+        """Print message from self.ser - usb device
+
+        Returns
+        -------
+        message: str
+            Message read from the buffer of the device
+        """
+
+
+        message_bits = self.ser.in_waiting
+        if message_bits:
+            message = self.ser.read(message_bits)
+            return message.decode('utf-8')
 
     def tohex(val):
         return '{:04X}'.format(val & ((1 << 16)-1))

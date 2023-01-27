@@ -48,7 +48,6 @@ class HeatingUnit:
 
         ## Read message to empty the buffer
         await self.read_message()
-        await asyncio.sleep(0.1)
 
         ## Ask for the temperature
         self.ser.write(b'M105\r\n')
@@ -101,7 +100,7 @@ class HeatingUnit:
         """
 
 
-        message_bits = self.ser.inWaiting()
+        message_bits = self.ser.in_waiting
         if message_bits:
             message = self.ser.read(message_bits)
             return message.decode('utf-8')
@@ -146,20 +145,4 @@ if __name__ == "__main__":
 
     asyncio.run(run_heater())
 """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
