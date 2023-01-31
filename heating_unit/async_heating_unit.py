@@ -116,9 +116,11 @@ class HeatingUnit:
 
         current_t = await self.get_temperature()
         ## Future implement function that checks target from memcached
-        target_t = float(self.mc.get(self.unit_name + ".target").decode("utf-8"))
+        target_t = self.mc.get(self.unit_name + ".target").decode("utf-8")
         print("current:", current_t, "target:", target_t)
-        if target_t > current_t:
+        if target_t == "stop":
+            await self.heater_switch(False)
+        elif float(target_t) > current_t:
             await self.heater_switch(True)
         else:
             await self.heater_switch(False)

@@ -5,11 +5,9 @@ from async_pump import Pump
 from async_conveyor_belt import ConveyorBelt
 from async_foamer_air import FoamerAir
 from pymemcache.client.base import Client
+from serial.tools.list_ports import comports
 
 
-# Belt port name 'AB0OZ6LF'
-# Pump port name 'A10KDPW2'
-# Heater port name 'ANZ20BUO'
 
 defaults = {
     "memcache.address"                  : "127.0.0.1:11211",
@@ -32,7 +30,7 @@ defaults = {
     "foamerAir.0.enable"              : 0,
     "foamerAir.0.target"              : 0,
     "foamerAir.0.pythonImportName"    : "async_foamer_air",
-    # "listOfDevices"                     : ["foamerAir_0"]
+    # "listOfDevices"                     : ["heatingUnit_0"]
     "listOfDevices"                     : ["heatingUnit_0", "conveyorBelt_0", "pump_0", "foamerAir_0"]
     }
 
@@ -80,11 +78,36 @@ if __name__ == "__main__":
     mc_address = defaults["memcache.address"]
     mc = Client(mc_address)
 
+
+    ## serian numbers
+    # Belt port name 'AB0OZ6LF'
+    # Pump port name 'A10KDPW2'
+    # Heater port name 'ANZ20BUO'
+    comport_list = list(comports())
+    for comport in comport_list:
+        serial_number = comport.serial_number
+        val = comport.device
+        if serial_number == 'AB0OZ6LF':
+            key = "conveyorBelt.0.address"
+            defaults[key] = val
+        elif serial_number == 'A10KDPW2':
+            key = "pump.0.address"
+            defaults[key] = val
+        elif serial_number == 'ANZ20BUO':
+            key = "heatingUnit.0.address"
+            defaults[key] = val
+        elif serial_number == None:
+            key = "foamerAir.0.address"
+            val = "T4"
+            defaults[key] = val
+
     ## Initialize memcached
     for key, val in defaults.items():
         mc.set(key, val)
 
-    
+
+
+
 
 
 
