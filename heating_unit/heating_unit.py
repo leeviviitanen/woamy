@@ -29,6 +29,7 @@ class HeatingUnit:
 
     def __init__(self, port_name):
 
+        print("heating unit port name:", port_name)
         self.ser = serial.Serial(port_name, 250000)
         time.sleep(5)
         self.temperature = 0.0

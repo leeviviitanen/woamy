@@ -30,7 +30,7 @@ defaults = {
     "foamerAir.0.enable"              : 0,
     "foamerAir.0.target"              : 0,
     "foamerAir.0.pythonImportName"    : "async_foamer_air",
-    # "listOfDevices"                     : ["heatingUnit_0"]
+    # "listOfDevices"                     : ["pump_0"]
     "listOfDevices"                     : ["heatingUnit_0", "conveyorBelt_0", "pump_0", "foamerAir_0"]
     }
 
@@ -86,19 +86,24 @@ if __name__ == "__main__":
     comport_list = list(comports())
     for comport in comport_list:
         serial_number = comport.serial_number
+        print("serial number", serial_number)
         val = comport.device
         if serial_number == 'AB0OZ6LF':
             key = "conveyorBelt.0.address"
+            print(key, val)
             defaults[key] = val
         elif serial_number == 'A10KDPW2':
             key = "pump.0.address"
+            print(key, val)
             defaults[key] = val
         elif serial_number == 'ANZ20BUO':
             key = "heatingUnit.0.address"
+            print(key, val)
             defaults[key] = val
         elif serial_number == None:
             key = "foamerAir.0.address"
             val = "T4"
+            print(key, val)
             defaults[key] = val
 
     ## Initialize memcached

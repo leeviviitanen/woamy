@@ -1,5 +1,6 @@
 import asyncio
 import serial
+import time
 from pymemcache.client.base import Client
 
 
@@ -15,20 +16,22 @@ class ConveyorBelt:
 
         self.mc = Client(self.mc_address)
         self.ser = serial.Serial(
-            self.mc.get(self.unit_name + ".address").decode("utf-8"), #COM port of the conveyer belt
+            self.mc.get(self.unit_name + ".address").decode("ascii"), #COM port of the conveyer belt
             baudrate=115200,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS
         )
+        print(self.ser)
         self.speed = 0.0
 
+        self.ser.reset_input_buffer()
         message_bytes = bytes.fromhex("010600000001480A") 
         self.ser.write(message_bytes)
         await asyncio.sleep(0.1)
-        await self.read_message()
+        self.read_message()
 
 
-    async def read_message(self):
+    def read_message(self):
         """Print message from self.ser - usb device
 
         Returns
@@ -67,15 +70,16 @@ class ConveyorBelt:
 
     async def update(self):
         
-        target_speed = self.mc.get(self.unit_name + ".target").decode("utf-8")
+        target_speed = self.mc.get(self.unit_name + ".target").decode("ascii")
         speed = self.speed
 
         if target_speed == "stop":
             message_bytes = bytes.fromhex("01060000000089CA") #stop
             print("Sending: stop")
+            self.ser.reset_input_buffer()
             self.ser.write(message_bytes)
             await asyncio.sleep(0.1)
-            await self.read_message()
+            self.read_message()
             print("Finished: stop")
 
 
@@ -92,9 +96,11 @@ class ConveyorBelt:
             speed_command = command_speed_hex + crc_checksum
             
             message_bytes = bytes.fromhex(speed_command)
+            print("Belt", message_bytes)
+            self.ser.reset_input_buffer()
             self.ser.write(message_bytes)
             await asyncio.sleep(0.1)
-            await self.read_message()
+            print(self.read_message())
             self.speed = float(target_speed)
 
 
@@ -103,8 +109,8 @@ class ConveyorBelt:
         ## First stop the conveyor belt 
         message_bytes = bytes.fromhex("01060000000089CA") #stop
         self.ser.write(message_bytes)
-        await asyncio.sleep(0.5)
-        await self.read_message()
+        await asyncio.sleep(0.1)
+        self.read_message()
         self.ser.close()
 
 

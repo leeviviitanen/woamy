@@ -1,5 +1,7 @@
 import serial
+import time
 import asyncio
+import serial_asyncio
 from pymemcache.client.base import Client
 
 
@@ -37,31 +39,35 @@ class HeatingUnit:
         self.mc = Client(self.mc_address)
         
         self.ser = serial.Serial(self.mc.get(self.unit_name + ".address").decode("utf-8"), 250000)
+        # self.reader, self.writer = await serial_asyncio.open_serial_connection(self.mc.get(self.unit_name + ".address").decode("utf-8"), baudrate=250000)
         self.temperature = 0.0
         self.target = 0.0
         self.switch = False
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
 
     async def get_temperature(self):
 
 
         ## Read message to empty the buffer
-        await self.read_message()
+        # await self.read_message()
 
         ## Ask for the temperature
         self.ser.write(b'M105\r\n')
-        await asyncio.sleep(0.1)
 
         ## Read messsage containing temperature from buffer
-        message = await self.read_message()
-        message_list = message.split(' ')
-        for element in message_list:
-            if len(element) < 2:
-                continue
-            elif element[:2] == 'T:':
-                self.temperature = float(element[2:])
-                break
+        await asyncio.sleep(0.1)
+        message = self.read_message()
+        try: 
+            message_list = message.split(' ')
+            for element in message_list:
+                if len(element) < 2:
+                    continue
+                elif element[:2] == 'T:':
+                    self.temperature = float(element[2:])
+                    break
+        except:
+            pass
 
         return self.temperature
 
@@ -87,10 +93,11 @@ class HeatingUnit:
             self.switch = False
             print("switching off")
 
-        await self.read_message()
+        await asyncio.sleep(0.1)
+        self.read_message()
 
 
-    async def read_message(self):
+    def read_message(self):
         """Print message from self.ser - usb device
 
         Returns
@@ -118,6 +125,7 @@ class HeatingUnit:
         ## Future implement function that checks target from memcached
         target_t = self.mc.get(self.unit_name + ".target").decode("utf-8")
         print("current:", current_t, "target:", target_t)
+        print("heater", self.ser)
         if target_t == "stop":
             await self.heater_switch(False)
         elif float(target_t) > current_t:

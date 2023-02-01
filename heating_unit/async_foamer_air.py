@@ -14,9 +14,9 @@ class FoamerAir:
     async def _init(self):
 
         self.mc = Client(self.mc_address)
-        self.pressure = 0.
+        self.pressure = 0.0
 
-        self.handle = ljm.openS(self.mc.get(self.unit_name + ".address").decode("utf-8"), "ANY", "ANY")  # T4 device, Any connection, Any identifier
+        self.handle = ljm.openS(self.mc.get(self.unit_name + ".address").decode("ascii"), "ANY", "ANY")  # T4 device, Any connection, Any identifier
 
             
         # Setup and call eWriteAddress to write a value to the LabJack.
@@ -34,16 +34,20 @@ class FoamerAir:
         
         #condition to stop the air
         if target_pressure == 'stop':
+            print("send stop")
             ljm.eWriteAddress(self.handle, self.address_w, self.dataType, 0)
             return
         
         if float(target_pressure) == pressure_value:
+            pressure_sensor_value = ljm.eReadAddress(self.handle, self.address_r, self.dataType)
+            print("constant pressure", pressure_sensor_value)
             return
         #sending commands to change the air pressure
         elif target_pressure and float(target_pressure)>=0 and float(target_pressure)<=5:
             
+            print("set new pressure", target_pressure)
             self.pressure = float(target_pressure)
-            ljm.eWriteAddress(self.handle, self.address_w, self.dataType, pressure_value)
+            ljm.eWriteAddress(self.handle, self.address_w, self.dataType, self.pressure)
             pressure_sensor_value = ljm.eReadAddress(self.handle, self.address_r, self.dataType)
             
 

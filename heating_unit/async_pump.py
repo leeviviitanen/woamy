@@ -28,11 +28,11 @@ class Pump:
         #start the pump
         message_bytes = bytes.fromhex("020C0023E5000080010000000049") 
         self.ser.write(message_bytes)
-        await self.read_message()
+        self.read_message()
 
 
 
-    async def read_message(self):
+    def read_message(self):
         """Print message from self.ser - usb device
 
         Returns
@@ -63,11 +63,11 @@ class Pump:
         if target_speed == 'stop':
             message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
             self.ser.write(message_bytes)
-            await self.read_message()
+            self.read_message()
 
             message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
             self.ser.write(message_bytes)
-            await self.read_message()
+            self.read_message()
             return
 
         ## Keep the speed same
@@ -96,17 +96,17 @@ class Pump:
             
             message_bytes = bytes.fromhex(speed_command)
             self.ser.write(message_bytes)
-            await self.read_message()
+            self.read_message()
 
     ## If the connection is closed set speed to zero shut down the pump
     async def close_connection(self):
 
         message_bytes = bytes.fromhex("020C002068000000000000000046") #value to 0
         self.ser.write(message_bytes)
-        await self.read_message()
+        self.read_message()
 
         message_bytes = bytes.fromhex("020C0023E500008002000000004A") #stop
         self.ser.write(message_bytes)
-        await self.read_message()
+        self.read_message()
         self.ser.close()
 
