@@ -155,7 +155,7 @@
         "type": "function",
         "z": "a76233044ccbff49",
         "name": "Prepare set request",
-        "func": "msg.payload = \"get heatingUnit.0.target\\r\\n\"; // get key\nreturn msg;",
+        "func": "msg.payload = \"get heatingUnit.0.value\\r\\n\"; // get key\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
