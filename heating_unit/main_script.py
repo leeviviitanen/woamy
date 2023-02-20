@@ -14,6 +14,7 @@ defaults = {
     "heatingUnit.0.address"             : "/dev/ttyUSB2",
     "heatingUnit.0.enable"              : 0, 
     "heatingUnit.0.target"              : 0, 
+    "heatingUnit.0.value"               : 0, 
     "heatingUnit.0.pythonImportName"    : "async_heating_unit",
 
     "conveyorBelt.0.address"             : "/dev/ttyUSB0",

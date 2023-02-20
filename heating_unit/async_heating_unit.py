@@ -122,6 +122,7 @@ class HeatingUnit:
     async def update(self):
 
         current_t = await self.get_temperature()
+        self.mc.set(self.unit_name + ".value", current_t)
         ## Future implement function that checks target from memcached
         target_t = self.mc.get(self.unit_name + ".target").decode("utf-8")
         print("current:", current_t, "target:", target_t)
