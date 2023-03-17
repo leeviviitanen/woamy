@@ -120,6 +120,28 @@ class HeatingUnit:
         self.ser.close()
 
     async def update(self):
+        """Update values between memcached and device or try to re-connect device if the device is not enabled.
+
+        """
+
+        enabled = int(self.mc.get(self.unit_name + ".enabled").decode("utf-8"))
+        if enabled:
+            try: 
+                await self.update_temperature()
+            except serial.serialutil.PortNotOpenError():
+                self.mc.set(self.unit_name + ".enabled", 0)
+
+        elif not enabled:
+            try:
+                await self._init()
+                self.mc.set(self.unit_name + ".enabled", 1)
+            except serial.serialutil.SerialException():
+                print("Unable to find", self.unit_name)
+                print("Check connection of", self.unit_name)
+                self.mc.set(self.unit_name + ".enabled", 0)
+
+
+    async def update_temperature(self):
 
         current_t = await self.get_temperature()
         self.mc.set(self.unit_name + ".value", current_t)
