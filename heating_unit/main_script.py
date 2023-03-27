@@ -55,7 +55,7 @@ async def run_machine():
 
     ## Start the main loop 
     ## On each step run the "update" mehtod of the object
-    for ind in range(200):
+    for ind in range(200000):
 
         oliot = []
         for device in eval(mc.get("listOfDevices").decode("ascii")):
