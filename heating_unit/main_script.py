@@ -12,7 +12,7 @@ from serial.tools.list_ports import comports
 defaults = {
     "memcache.address"                  : "127.0.0.1:11211",
     "heatingUnit.0.address"             : "/dev/ttyUSB2",
-    "heatingUnit.0.enable"              : 0, 
+    "heatingUnit.0.enabled"             : 0, 
     "heatingUnit.0.target"              : 0, 
     "heatingUnit.0.value"               : 0, 
     "heatingUnit.0.pythonImportName"    : "async_heating_unit",
@@ -31,7 +31,7 @@ defaults = {
     "foamerAir.0.enable"              : 0,
     "foamerAir.0.target"              : 0,
     "foamerAir.0.pythonImportName"    : "async_foamer_air",
-    # "listOfDevices"                     : ["pump_0"]
+    # "listOfDevices"                     : ["heatingUnit_0"]
     "listOfDevices"                     : ["heatingUnit_0", "conveyorBelt_0", "pump_0", "foamerAir_0"]
     }
 
@@ -55,7 +55,7 @@ async def run_machine():
 
     ## Start the main loop 
     ## On each step run the "update" mehtod of the object
-    for ind in range(50):
+    for ind in range(200000):
 
         oliot = []
         for device in eval(mc.get("listOfDevices").decode("ascii")):

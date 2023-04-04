@@ -3,7 +3,7 @@ import time
 import asyncio
 import serial_asyncio
 from pymemcache.client.base import Client
-
+from serial.tools.list_ports import comports
 
 class HeatingUnit:
     """
@@ -37,7 +37,19 @@ class HeatingUnit:
 
     async def _init(self):
         self.mc = Client(self.mc_address)
+
+        comport_list = list(comports())
+        for comport in comport_list:
+            serial_number = comport.serial_number
+            val = comport.device
+            if serial_number == 'ANZ20BUO':
+                key = "heatingUnit.0.address"
+                break
+
+        self.mc.set(key, val)
+
         
+        print(self.mc.get(self.unit_name + ".address").decode("utf-8"))
         self.ser = serial.Serial(self.mc.get(self.unit_name + ".address").decode("utf-8"), 250000)
         # self.reader, self.writer = await serial_asyncio.open_serial_connection(self.mc.get(self.unit_name + ".address").decode("utf-8"), baudrate=250000)
         self.temperature = 0.0
@@ -82,7 +94,7 @@ class HeatingUnit:
         """
 
         if switch_value == self.switch:
-            print("no changes")
+            pass
 
         elif switch_value:
             self.ser.write(b'M104 S200\r\n')
@@ -120,13 +132,34 @@ class HeatingUnit:
         self.ser.close()
 
     async def update(self):
+        """Update values between memcached and device or try to re-connect device if the device is not enabled.
+
+        """
+
+        enabled = int(self.mc.get(self.unit_name + ".enabled").decode("utf-8"))
+        if enabled:
+            try: 
+                await self.update_temperature()
+            except:
+                self.mc.set(self.unit_name + ".enabled", 0)
+
+        elif not enabled:
+            try:
+                await self._init()
+                self.mc.set(self.unit_name + ".enabled", 1)
+            except:
+                print("Unable to find", self.unit_name)
+                print("Check connection of", self.unit_name)
+                self.mc.set(self.unit_name + ".enabled", 0)
+
+
+    async def update_temperature(self):
 
         current_t = await self.get_temperature()
         self.mc.set(self.unit_name + ".value", current_t)
         ## Future implement function that checks target from memcached
         target_t = self.mc.get(self.unit_name + ".target").decode("utf-8")
         print("current:", current_t, "target:", target_t)
-        print("heater", self.ser)
         if target_t == "stop":
             await self.heater_switch(False)
         elif float(target_t) > current_t:
