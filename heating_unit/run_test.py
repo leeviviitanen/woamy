@@ -33,7 +33,7 @@ defaults = {
 heat1 = heating_unit.HeatingUnit("/dev/tty.usbserial-ANZ20BUO")
 print(heat1.get_temperature())
 
-for ind in range(2200):
+for ind in range(22):
     current_temperature = heat1.get_temperature()
 
     print(current_temperature)
