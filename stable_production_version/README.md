@@ -20,4 +20,8 @@ asyncio_conveyor_belt.py: conveyor_belt class
 
 foamer_pw_check.py: tested manual foamer script.
 
+flows.json: node-red inerfeace for belt
+
+*change log*
+
 3.10.2023 initial import for working conveyor belt and manual foamer testing
