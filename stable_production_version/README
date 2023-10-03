@@ -2,4 +2,14 @@ woamy one sea-container scripts
 
 DO NOT EDIT
 
-3.10.2023 initial import for working conveyor belt
+**usage belt:
+
+1.open termenal
+2.run memchached
+3.open termenal
+4.run node-red
+5.open terminal 
+6.run python3 main_script.py
+7.open browser localhost:1880/ui/
+
+3.10.2023 initial import for working conveyor belt and manual foamer testing
