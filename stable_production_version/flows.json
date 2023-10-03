@@ -1,0 +1,236 @@
+[
+    {
+        "id": "389b894943a43ae8",
+        "type": "tab",
+        "label": "Woamy One",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "19dad0f7d5dc3a46",
+        "type": "debug",
+        "z": "389b894943a43ae8",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "49e03f5cf27c1677",
+        "type": "ui_slider",
+        "z": "389b894943a43ae8",
+        "name": "",
+        "label": "Conveyor Belt speed",
+        "tooltip": "",
+        "group": "081e74f917a8cb44",
+        "order": 6,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "0",
+        "max": "100",
+        "step": "1",
+        "className": "",
+        "x": 160,
+        "y": 840,
+        "wires": [
+            [
+                "39f2d92977791fb9"
+            ]
+        ]
+    },
+    {
+        "id": "39f2d92977791fb9",
+        "type": "function",
+        "z": "389b894943a43ae8",
+        "name": "Prepare set request",
+        "func": "let val = msg.payload.toString();\nlet bits = val.length.toString();\nmsg.payload = \"set conveyorBelt.0.target 0 0 \" + bits + \"\\r\\n\" + val + \"\\r\\n\"; // set key\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 840,
+        "wires": [
+            [
+                "fa8b882c5c1564c5"
+            ]
+        ]
+    },
+    {
+        "id": "fa8b882c5c1564c5",
+        "type": "tcp request",
+        "z": "389b894943a43ae8",
+        "name": "",
+        "server": "127.0.0.1",
+        "port": "11211",
+        "out": "time",
+        "ret": "buffer",
+        "splitc": "1000",
+        "newline": "",
+        "trim": false,
+        "tls": "",
+        "x": 630,
+        "y": 840,
+        "wires": [
+            [
+                "4ecec061fdfbf565"
+            ]
+        ]
+    },
+    {
+        "id": "4ecec061fdfbf565",
+        "type": "function",
+        "z": "389b894943a43ae8",
+        "name": "Post process result",
+        "func": "msg.payload = msg.payload.toString(\"utf8\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 840,
+        "wires": [
+            [
+                "19dad0f7d5dc3a46"
+            ]
+        ]
+    },
+    {
+        "id": "1acc77a61341bda5",
+        "type": "ui_switch",
+        "z": "389b894943a43ae8",
+        "name": "",
+        "label": "Conveyor belt switch",
+        "tooltip": "",
+        "group": "081e74f917a8cb44",
+        "order": 12,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 920,
+        "wires": [
+            [
+                "745de5cbc925a0b2"
+            ]
+        ]
+    },
+    {
+        "id": "745de5cbc925a0b2",
+        "type": "function",
+        "z": "389b894943a43ae8",
+        "name": "Prepare set request",
+        "func": "if (msg.payload) {\n    msg.payload = \"set conveyorBelt.0.status 0 0 \" + \"1\" + \"\\r\\n\" + \"1\" + \"\\r\\n\"; // set key\n\n} else {\n    msg.payload = \"set conveyorBelt.0.status 0 0 \" + \"1\" + \"\\r\\n\" + \"5\" + \"\\r\\n\"; // set key\n\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 920,
+        "wires": [
+            [
+                "bdf6ef5e7999fc78"
+            ]
+        ]
+    },
+    {
+        "id": "bdf6ef5e7999fc78",
+        "type": "tcp request",
+        "z": "389b894943a43ae8",
+        "name": "",
+        "server": "127.0.0.1",
+        "port": "11211",
+        "out": "time",
+        "ret": "buffer",
+        "splitc": "1000",
+        "newline": "",
+        "trim": false,
+        "tls": "",
+        "x": 690,
+        "y": 920,
+        "wires": [
+            [
+                "9bd6ef125fdcc243"
+            ]
+        ]
+    },
+    {
+        "id": "9bd6ef125fdcc243",
+        "type": "function",
+        "z": "389b894943a43ae8",
+        "name": "Post process result",
+        "func": "msg.payload = msg.payload.toString(\"utf8\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 920,
+        "wires": [
+            [
+                "19dad0f7d5dc3a46"
+            ]
+        ]
+    },
+    {
+        "id": "1643ae253a35ffee",
+        "type": "ui_spacer",
+        "z": "389b894943a43ae8",
+        "name": "spacer",
+        "group": "081e74f917a8cb44",
+        "order": 1,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "081e74f917a8cb44",
+        "type": "ui_group",
+        "name": "Control panel",
+        "tab": "d39b4959a5f94ec7",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "d39b4959a5f94ec7",
+        "type": "ui_tab",
+        "name": "WoamyOne",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
