@@ -12,4 +12,12 @@ DO NOT EDIT
 6.run python3 main_script.py
 7.open browser localhost:1880/ui/
 
+*files*
+
+main_script.py:main file to run conveyor belt
+
+asyncio_conveyor_belt.py: conveyor_belt class
+
+foamer_pw_check.py: tested manual foamer script.
+
 3.10.2023 initial import for working conveyor belt and manual foamer testing
