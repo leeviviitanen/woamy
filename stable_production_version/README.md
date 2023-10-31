@@ -21,9 +21,11 @@ DO NOT EDIT
 
 *files*
 
-main_script.py:main file to run conveyor belt
+main_script.py:main file to run conveyor belt and foamer
 
 asyncio_conveyor_belt.py: conveyor_belt class
+
+async_foamer.py: FoamerUnit class
 
 foamer_pw_check.py: tested manual foamer script.
 
@@ -32,3 +34,4 @@ flows.json: node-red inerfeace for belt
 *change log*
 
 3.10.2023 initial import for working conveyor belt and manual foamer testing
+31.10.2023 add file async_foamer.py and changed main_script.py
