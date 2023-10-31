@@ -1,34 +1,43 @@
 import asyncio
-import numpy as np
+
 from async_conveyor_belt import ConveyorBelt
+from async_foamer import FoamerUnit
 from pymemcache.client.base import Client
-from serial.tools.list_ports import comports
+
 
 
 
 defaults = {
-    "memcache.address"                  : "127.0.0.1:11211",
-    
-
+    "memcache.address"                   : "127.0.0.1:11211",
     "conveyorBelt.0.address"             : "opc.tcp://10.0.0.53:4840",
     "conveyorBelt.0.enable"              : 0,
     "conveyorBelt.0.target"              : 0,
     "conveyorBelt.0.pythonImportName"    : "async_conveyor_belt",
     "conveyorBelt.0.status"              : 5,
-
+   
+    #defaults for async_foamer
     
-    "listOfDevices"                     : ["conveyorBelt_0"]
+    "foamer.0.address"             : "opc.tcp://10.0.0.63:4840",
+    "foamer.0.enable"              : 0,
+    "foamer.0.pythonImportName"    : "async_foamer",
+    "foamer.0.target"              :0,
+    "foamer.0.status"              : 5,
+    "foamer.0.Airtarget"           :10,
+    "foamer.0.HeadRPMtarget"       :200,
+    "foamer.0.PressureHeadtarget"  :0,
+    "foamer.0.ProductFlowtarget"   :20,
+    "foamer.0.PumpSpeedtarget"     :5,
+    "listOfDevices": ["conveyorBelt_0", "foamer_0"], 
+   
+ 
     }
 
 
 async def run_machine():
 
     ## Create objects for each "module"
-    #heatingUnit_0 = HeatingUnit(unit_name="heatingUnit.0", memcached_address=mc.get("memcache.address").decode("ascii"))
     conveyorBelt_0 = ConveyorBelt(unit_name="conveyorBelt.0")
-    #pump_0 = Pump(unit_name="pump.0", memcached_address=mc.get("memcache.address").decode("ascii"))
-    #foamerAir_0 = FoamerAir(unit_name="foamerAir.0", memcached_address=mc.get("memcache.address").decode("ascii"))
-
+    foamer_0 = FoamerUnit(unit_name="foamer_0")
     ## Initialize objects using concurrency
     oliot = []
     for device in eval(mc.get("listOfDevices").decode("ascii")):
